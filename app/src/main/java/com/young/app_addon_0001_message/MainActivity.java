@@ -11,6 +11,44 @@ public class MainActivity extends AppCompatActivity {
     private Button mButton = null;
     private static final String TAG = "MessageTest";
     private int ButtonCnt = 0;
+    private Thread internalThread = null;
+    private MyThread myThread = null;
+
+    class myRunnable implements Runnable {
+        @Override
+        public void run() {
+            int count = 0;
+
+            for (;;) {
+                Log.d(TAG, "InternalThread " + count);
+                count++;
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /* Ctrl + O */
+    class MyThread extends Thread {
+        @Override
+        public void run() {
+            super.run();
+
+            int count = 0;
+            for (;;) {
+                Log.d(TAG, "MyThread " + count);
+                count++;
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,5 +63,13 @@ public class MainActivity extends AppCompatActivity {
                 ButtonCnt++;
             }
         });
+
+        /* Use internal Thread class to instantiate object */
+        internalThread = new Thread(new myRunnable(), "MessageTestThread");
+        internalThread.start();
+
+        /* Use MyThread class to instantiate object */
+        myThread = new MyThread();
+        myThread.start();
     }
 }
