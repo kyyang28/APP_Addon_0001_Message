@@ -9,15 +9,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import android.os.HandlerThread;
+
 public class MainActivity extends AppCompatActivity {
 
-    private Button mButton = null;
+    private Button mButton;
     private static final String TAG = "MessageTest";
     private int ButtonCnt = 0;
-    private Thread internalThread = null;
-    private MyThread myThread = null;
-    private Handler mHandler = null;
+    private Thread internalThread;
+    private MyThread myThread;
+    private Handler mHandler;
+    private Handler mHandler2;
     private int mMessageCount = 0;
+
+    private HandlerThread myThread2;
 
     class myRunnable implements Runnable {
         @Override
@@ -82,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
                 ButtonCnt++;
                 Message msg = new Message();
                 mHandler.sendMessage(msg);
+
+                mHandler2.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "Get message for HandlerThread " + mMessageCount);
+                        mMessageCount++;
+                    }
+                });
             }
         });
 
@@ -102,5 +115,10 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        myThread2 = new HandlerThread("MessageHandlerThread");
+        myThread2.start();
+
+        mHandler2 = new Handler(myThread2.getLooper());
     }
 }
